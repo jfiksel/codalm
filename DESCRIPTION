@@ -1,0 +1,19 @@
+Package: codalm
+Type: Package
+Title: Transformation-free Linear Regression for Compositional Outcomes and Predictors
+Version: 0.1.0
+Authors@R: person(given = "Jacob",
+           family = "Fiksel",
+           role = "cre",
+           email = "jfiksel@gmail.com")
+Maintainer: Jacob Fiksel <jfiksel@gmail.com>
+Description: Implements the EM algorithm as described in Fiksel et al. (2020)
+    for transformation-free linear regression for
+    compositional outcomes and predictors.
+License: GPL-2
+Imports: SQUAREM
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/jfiksel/codalm
+BugReports: https://github.com/jfiksel/codalm/issues
+RoxygenNote: 7.1.0
