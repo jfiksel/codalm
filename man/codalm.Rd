@@ -7,11 +7,14 @@
 codalm(yout, ypred, accelerate = FALSE)
 }
 \arguments{
-\item{yout}{A matrix of compositional outcomes. Each row is an observation, and must sum to 1}
+\item{yout}{A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+If any rows do not sum to 1, they will be renormalized}
 
-\item{ypred}{A matrix of compositional predictors. Each row is an observation, and must sum to 1}
+\item{ypred}{A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+If any rows do not sum to 1, they will be renormalized}
 
-\item{accelerate}{A logical variable, indicating whether or not to use the Squarem algorithm for acceleration of the EM algorithm. Default is FALSE.}
+\item{accelerate}{A logical variable, indicating whether or not to use the Squarem algorithm
+for acceleration of the EM algorithm. Default is FALSE.}
 }
 \value{
 A \eqn{D_s} x \eqn{D_r} compositional coefficient matrix, where \eqn{D_s} and \eqn{D_r}  are the dimensions of the compositional predictor and outcome, respectively

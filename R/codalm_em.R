@@ -45,9 +45,12 @@ compreg.loglik <- function(pars, A, G, D1, D2) {
 #' @description Implements the EM algorithm as described in Fiksel et al. (2020)
 #' for transformation-free linear regression for compositional outcomes and predictors.
 #'
-#' @param yout A matrix of compositional outcomes. Each row is an observation, and must sum to 1
-#' @param ypred A matrix of compositional predictors. Each row is an observation, and must sum to 1
-#' @param accelerate A logical variable, indicating whether or not to use the Squarem algorithm for acceleration of the EM algorithm. Default is FALSE.
+#' @param yout A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+#' If any rows do not sum to 1, they will be renormalized
+#' @param ypred A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+#' If any rows do not sum to 1, they will be renormalized
+#' @param accelerate A logical variable, indicating whether or not to use the Squarem algorithm
+#' for acceleration of the EM algorithm. Default is FALSE.
 #'
 #' @references \url{https://arxiv.org/abs/2004.07881}
 #'
@@ -55,6 +58,17 @@ compreg.loglik <- function(pars, A, G, D1, D2) {
 #' @export
 #' @importFrom SQUAREM squarem fpiter
 codalm <- function(yout, ypred, accelerate = FALSE) {
+    Nout <- nrow(yout)
+    Npred <- nrow(ypred)
+    if(Nout != Npred) {
+        stop("Outcomes and predictors do not have the same number of observations")
+    }
+    for(i in 1:Nout) {
+        yout[i,] <- yout[i,] / sum(yout[i,])
+    }
+    for(i in 1:Npred) {
+        ypred[i,] <- ypred[i,] / sum(ypred[i,])
+    }
     D1 <- ncol(yout)
     D2 <- ncol(ypred)
     par0 <- rep(1/D1, D1*D2)
@@ -70,4 +84,63 @@ codalm <- function(yout, ypred, accelerate = FALSE) {
     B_est <- em_output$par
     dim(B_est) <- c(D2, D1)
     return(B_est)
+}
+
+codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
+    yout <- ymat[indices, 1:D1]
+    ypred <- ymat[indices, (D1+1):(D1+D2)]
+    B_est <- codalm(yout, ypred, accelerate = accelerate)
+    return(as.vector(B_est))
+}
+
+#' @title Bootstrap Confidence Intervals Linear Regression for Compositional Outcomes and Predictors
+#'
+#' @description Implements the EM algorithm as described in Fiksel et al. (2020)
+#' for transformation-free linear regression for compositional outcomes and predictors.
+#'
+#' @param yout A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+#' If any rows do not sum to 1, they will be renormalized
+#' @param ypred A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+#' If any rows do not sum to 1, they will be renormalized
+#' @param accelerate A logical variable, indicating whether or not to use the Squarem algorithm
+#' for acceleration of the EM algorithm. Default is FALSE.
+#' @param R The number of bootstrap reptitions to use. Default is 500
+#' @param ci_type A character string with the type of bootstrap interval to be calculated. One of
+#' "norm", "perc", "basic", or "bca". See the documentation for
+#' \code{\link[boot]{boot.ci}} for more information. Default is "perc".
+#' @param conf A scalar between 0 and 1 containing the confidence level of the required intervals.
+#' Default is .95.
+#' @param ... Additional arguments to pass to the \code{\link[boot]{boot}}  function
+#'
+#' @return A list, with \code{ci_L} and
+#' @export
+#'
+#' @importFrom boot boot boot.ci
+coda_lm_ci <- function(yout, ypred, accelerate = FALSE, R = 500, ci_type = "perc", conf = .95, ...) {
+    Nout <- nrow(yout)
+    Npred <- nrow(ypred)
+    if(Nout != Npred) {
+        stop("Outcomes and predictors do not have the same number of observations")
+    }
+    ymat <- cbind(yout, ypred)
+    D1 <- ncol(yout)
+    D2 <- ncol(ypred)
+    bootstraps <- boot(ymat, codalm_boot_fn, R = R, D1 = D1, D2 = D2, accelerate = accelerate, ...)
+    ci_mat <- do.call(rbind, lapply(1:(D1*D2), function(i) {
+        ci <- boot.ci(bootstraps, index = i, conf = conf, type = c("norm", "basic", "perc", "bca"))
+        if(ci_type == "norm") {
+            return(ci$normal[,2:3])
+        } else if (ci_type == "basic") {
+            return(ci$basic[,4:5])
+        } else if (ci_type == "perc") {
+            return(ci$percent[,4:5])
+        } else {
+            return(ci$bca[,4:5])
+        }
+    }))
+    ci_L <- as.vector(ci_mat[,1])
+    dim(ci_L) <- c(D2, D1)
+    ci_U<- as.vector(ci_mat[,2])
+    dim(ci_U) <- c(D2, D1)
+    return(list(ci_L = ci_L, ci_U = ci_U))
 }
