@@ -41,27 +41,53 @@ microscopic_mat <- microscopic_mat / rowSums(microscopic_mat)
 To estimate the coefficient matrix B, we can use the `codalm` function.
 
 ```r
-B_est <- codalm(yout = microscopic_mat, ypred = image_mat)
+B_est <- codalm(y = microscopic_mat, x = image_mat)
 B_est
 ```
-
-We can also use the bootstrap to estimate 95% confidence intervals. We will specify
-the `accelerate` argument as TRUE to take advantage of the Squarem algorithm for bootstrapping. We will
+We can also use the bootstrap to estimate 95% confidence intervals. We will
 only use 50 bootstrap iterations as an example (R = 50), but is recommended to do more.
 
 ```r
-B_ci <- coda_lm_ci(yout = microscopic_mat, ypred = image_mat,
-           accelerate = TRUE, R = 50, ci_type = "perc", conf = .95)
+B_ci <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50, ci_type = "perc",
+                   conf = .95)
 B_ci$ci_L
 B_ci$ci_U
+```
+
+You can also take advantage of parallelization, if you have multiple cores available.
+Note that the code below will likely not work for Windows users--please see the documentation
+for `boot` to see how one would parallelize for a Windows OS. Note that the number
+of cores is not required to be 4.
+
+```r
+ncores <- 4
+B_ci <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50, ci_type = "perc",
+                   conf = .95, parallel = "multicore", ncpus = ncores)
 ```
 
 Finally, we will do a permutation test for linear independence. Again, we will only do 50
 permutations as an example, but in practice this number should be higher.
 
 ```r
-indep_test_pval <- codalm_indep_test(yout = microscopic_mat, ypred = image_mat, accelerate = TRUE,
+indep_test_pval <- codalm_indep_test(y = microscopic_mat, x = image_mat,
                                      nperms = 50, init.seed = 123)
 indep_test_pval
 ```
 
+For those without a Windows OS, this function can be parallelized as follows:
+
+```r
+ncores <- 4
+indep_test_pval <- codalm_indep_test(y = microscopic_mat, x = image_mat,
+                                     nperms = 50, init.seed = 123,
+                                     parallel = TRUE, ncpus = ncores)
+```
+
+And for those with a Windows OS:
+
+```r
+ncores <- 4
+indep_test_pval <- codalm_indep_test(y = microscopic_mat, x = image_mat,
+                                     nperms = 50, init.seed = 123,
+                                     parallel = TRUE, ncpus = ncores, windowsOS = TRUE)
+```
