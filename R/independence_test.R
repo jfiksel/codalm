@@ -26,6 +26,24 @@ logLikComp <- function(y, x, M) {
 #'
 #' @return The p-value for the indepence test
 #' @export
+#'
+#' @import doParallel
+#' @import foreach
+#' @import doRNG
+#' @examples
+#' require(gtools)
+#' x <- rdirichlet(100, c(1, 1, 1))
+#' y <- rdirichlet(100, c(1, 1, 1))
+#' codalm_indep_test(y, x)
+#'
+#' require(ggtern)
+#' data("WhiteCells", package = 'ggtern')
+#' image <- subset(WhiteCells, Experiment == "ImageAnalysis")
+#' image_mat <- as.matrix(image[,c("G", "L", "M")])
+#' microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
+#' microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
+#' x  <- image_mat  / rowSums(image_mat)
+#' y <- microscopic_mat / rowSums(microscopic_mat)
 codalm_indep_test <- function(y, x, nperms = 500, init.seed = 123, accelerate = TRUE,
                               parallel = FALSE, ncpus = 1L, windowsOS = FALSE) {
     Nout <- nrow(y)
@@ -49,15 +67,15 @@ codalm_indep_test <- function(y, x, nperms = 500, init.seed = 123, accelerate = 
     llr_obs <- ll_full - ll_null
     ### Get do permutation test
     RNGkind("L'Ecuyer-CMRG")
-    set.seed(init.seed)
     if(parallel == FALSE) {
-        permut_stats <- foreach(1:nperms, .combine = c) %do% {
+        set.seed(init.seed)
+        permut_stats <- sapply(1:nperms, function(i) {
             perm_index <- sample(1:nrow(x))
             x_perm <- x[perm_index,]
             B_perm <- codalm(y, x_perm, accelerate = accelerate)
             ll_perm <- logLikComp(y, x_perm, B_perm)
             return(ll_perm - ll_null)
-        }
+        })
     } else {
         if(windowsOS == FALSE) {
             registerDoParallel(cores=ncpus)
@@ -65,7 +83,7 @@ codalm_indep_test <- function(y, x, nperms = 500, init.seed = 123, accelerate = 
             cl <- parallel::makeCluster(ncpus)
             registerDoParallel(cl)
         }
-        permut_stats <- foreach(1:nperms, .combine = c) %dopar% {
+        permut_stats <- foreach(1:nperms, .combine = c, .options.RNG=init.seed) %dorng% {
             perm_index <- sample(1:nrow(x))
             x_perm <- x[perm_index,]
             B_perm <- codalm(y, x_perm, accelerate = accelerate)

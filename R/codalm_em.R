@@ -57,6 +57,15 @@ compreg.loglik <- function(pars, A, G, D1, D2) {
 #' @return A \eqn{D_s} x \eqn{D_r} compositional coefficient matrix, where \eqn{D_s} and \eqn{D_r}  are the dimensions of the compositional predictor and outcome, respectively
 #' @export
 #' @importFrom SQUAREM squarem fpiter
+#' @examples
+#' require(ggtern)
+#' data("WhiteCells", package = 'ggtern')
+#' image <- subset(WhiteCells, Experiment == "ImageAnalysis")
+#' image_mat <- as.matrix(image[,c("G", "L", "M")])
+#' microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
+#' microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
+#' x  <- image_mat  / rowSums(image_mat)
+#' y <- microscopic_mat / rowSums(microscopic_mat)
 codalm <- function(y, x, accelerate = TRUE) {
     Nout <- nrow(y)
     Npred <- nrow(x)
@@ -104,7 +113,7 @@ codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
 #' If any rows do not sum to 1, they will be renormalized
 #' @param accelerate A logical variable, indicating whether or not to use the
 #' Squarem algorithm for acceleration of the EM algorithm. Default is TRUE
-#' @param R The number of bootstrap reptitions to use. Default is 500
+#' @param nboot The number of bootstrap reptitions to use. Default is 500
 #' @param ci_type A character string with the type of bootstrap interval to be calculated. One of
 #' "norm", "perc", "basic", or "bca". See the documentation for
 #' \code{\link[boot]{boot.ci}} for more information. Default is "perc".
@@ -118,7 +127,17 @@ codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
 #' @export
 #'
 #' @importFrom boot boot boot.ci
-coda_lm_ci <- function(y, x, accelerate = TRUE, R = 500, ci_type = "perc", conf = .95, ...) {
+#' @examples
+#' require(ggtern)
+#' data("WhiteCells", package = 'ggtern')
+#' image <- subset(WhiteCells, Experiment == "ImageAnalysis")
+#' image_mat <- as.matrix(image[,c("G", "L", "M")])
+#' microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
+#' microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
+#' x  <- image_mat  / rowSums(image_mat)
+#' y <- microscopic_mat / rowSums(microscopic_mat)
+#' codalm_ci(y, x, nboot = 50, ci_type = "perc", conf = .95)
+codalm_ci <- function(y, x, accelerate = TRUE, nboot = 500, ci_type = "perc", conf = .95, ...) {
     Nout <- nrow(y)
     Npred <- nrow(x)
     if(Nout != Npred) {
@@ -127,7 +146,7 @@ coda_lm_ci <- function(y, x, accelerate = TRUE, R = 500, ci_type = "perc", conf 
     ymat <- cbind(y, x)
     D1 <- ncol(y)
     D2 <- ncol(x)
-    bootstraps <- boot(ymat, codalm_boot_fn, R = R, D1 = D1, D2 = D2, accelerate = accelerate, ...)
+    bootstraps <- boot(ymat, codalm_boot_fn, R = nboot, D1 = D1, D2 = D2, accelerate = accelerate, ...)
     ci_mat <- do.call(rbind, lapply(1:(D1*D2), function(i) {
         ci <- boot.ci(bootstraps, index = i, conf = conf, type = c("norm", "basic", "perc", "bca"))
         if(ci_type == "norm") {

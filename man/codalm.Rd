@@ -23,6 +23,16 @@ A \eqn{D_s} x \eqn{D_r} compositional coefficient matrix, where \eqn{D_s} and \e
 Implements the EM algorithm as described in Fiksel et al. (2020)
 for transformation-free linear regression for compositional outcomes and predictors.
 }
+\examples{
+require(ggtern)
+data("WhiteCells", package = 'ggtern')
+image <- subset(WhiteCells, Experiment == "ImageAnalysis")
+image_mat <- as.matrix(image[,c("G", "L", "M")])
+microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
+microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
+x  <- image_mat  / rowSums(image_mat)
+y <- microscopic_mat / rowSums(microscopic_mat)
+}
 \references{
 \url{https://arxiv.org/abs/2004.07881}
 }

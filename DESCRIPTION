@@ -13,7 +13,10 @@ Description: Implements the EM algorithm as described in Fiksel et al. (2020)
 License: GPL-2
 Imports:
     SQUAREM (>= 2020.3),
-    boot
+    boot,
+    doParallel,
+    foreach,
+    doRNG
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/jfiksel/codalm
@@ -21,5 +24,6 @@ BugReports: https://github.com/jfiksel/codalm/issues
 RoxygenNote: 7.1.0
 Suggests: 
     knitr,
-    ggtern
+    ggtern,
+    gtools
 VignetteBuilder: knitr

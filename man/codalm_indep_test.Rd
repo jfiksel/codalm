@@ -45,3 +45,18 @@ The p-value for the indepence test
 Implements the loss function based permutation test as described in Fiksel et al. (2020)
 for a test of linear indepence between compositional outcomes and predictors.
 }
+\examples{
+require(gtools)
+x <- rdirichlet(100, c(1, 1, 1))
+y <- rdirichlet(100, c(1, 1, 1))
+codalm_indep_test(y, x)
+
+require(ggtern)
+data("WhiteCells", package = 'ggtern')
+image <- subset(WhiteCells, Experiment == "ImageAnalysis")
+image_mat <- as.matrix(image[,c("G", "L", "M")])
+microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
+microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
+x  <- image_mat  / rowSums(image_mat)
+y <- microscopic_mat / rowSums(microscopic_mat)
+}
