@@ -1,3 +1,6 @@
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/jfiksel/codalm.svg?branch=master)](https://travis-ci.com/jfiksel/codalm)
+<!-- badges: end -->
 
 # The codalm R package
 
