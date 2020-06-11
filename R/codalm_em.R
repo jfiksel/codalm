@@ -45,41 +45,41 @@ compreg.loglik <- function(pars, A, G, D1, D2) {
 #' @description Implements the EM algorithm as described in Fiksel et al. (2020)
 #' for transformation-free linear regression for compositional outcomes and predictors.
 #'
-#' @param yout A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+#' @param y A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
 #' If any rows do not sum to 1, they will be renormalized
-#' @param ypred A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+#' @param x A matrix of compositional predictors. Each row is an observation, and must sum to 1.
 #' If any rows do not sum to 1, they will be renormalized
-#' @param accelerate A logical variable, indicating whether or not to use the Squarem algorithm
-#' for acceleration of the EM algorithm. Default is FALSE.
+#' @param accelerate A logical variable, indicating whether or not to use the
+#' Squarem #algorithm for acceleration of the EM algorithm. Default is TRUE.
 #'
 #' @references \url{https://arxiv.org/abs/2004.07881}
 #'
 #' @return A \eqn{D_s} x \eqn{D_r} compositional coefficient matrix, where \eqn{D_s} and \eqn{D_r}  are the dimensions of the compositional predictor and outcome, respectively
 #' @export
 #' @importFrom SQUAREM squarem fpiter
-codalm <- function(yout, ypred, accelerate = FALSE) {
-    Nout <- nrow(yout)
-    Npred <- nrow(ypred)
+codalm <- function(y, x, accelerate = TRUE) {
+    Nout <- nrow(y)
+    Npred <- nrow(x)
     if(Nout != Npred) {
         stop("Outcomes and predictors do not have the same number of observations")
     }
     for(i in 1:Nout) {
-        yout[i,] <- yout[i,] / sum(yout[i,])
+        y[i,] <- y[i,] / sum(y[i,])
     }
     for(i in 1:Npred) {
-        ypred[i,] <- ypred[i,] / sum(ypred[i,])
+        x[i,] <- x[i,] / sum(x[i,])
     }
-    D1 <- ncol(yout)
-    D2 <- ncol(ypred)
+    D1 <- ncol(y)
+    D2 <- ncol(x)
     par0 <- rep(1/D1, D1*D2)
     if(accelerate) {
         em_output <- squarem(par = par0, fixptfn = compreg.em,
                              objfn = compreg.loglik, control = list(tol = 1.e-8),
-                             A = yout, G = ypred, D1 = D1, D2 = D2)
+                             A = y, G = x, D1 = D1, D2 = D2)
     } else {
         em_output <- fpiter(par = par0, fixptfn = compreg.em,
                             objfn = compreg.loglik, control = list(tol = 1.e-8),
-                            A = yout, G = ypred, D1 = D1, D2 = D2)
+                            A = y, G = x, D1 = D1, D2 = D2)
     }
     B_est <- em_output$par
     dim(B_est) <- c(D2, D1)
@@ -87,9 +87,9 @@ codalm <- function(yout, ypred, accelerate = FALSE) {
 }
 
 codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
-    yout <- ymat[indices, 1:D1]
-    ypred <- ymat[indices, (D1+1):(D1+D2)]
-    B_est <- codalm(yout, ypred, accelerate = accelerate)
+    y <- ymat[indices, 1:D1]
+    x <- ymat[indices, (D1+1):(D1+D2)]
+    B_est <- codalm(y, x, accelerate = accelerate)
     return(as.vector(B_est))
 }
 
@@ -98,33 +98,35 @@ codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
 #' @description Implements the EM algorithm as described in Fiksel et al. (2020)
 #' for transformation-free linear regression for compositional outcomes and predictors.
 #'
-#' @param yout A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+#' @param y A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
 #' If any rows do not sum to 1, they will be renormalized
-#' @param ypred A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+#' @param x A matrix of compositional predictors. Each row is an observation, and must sum to 1.
 #' If any rows do not sum to 1, they will be renormalized
-#' @param accelerate A logical variable, indicating whether or not to use the Squarem algorithm
-#' for acceleration of the EM algorithm. Default is FALSE.
+#' @param accelerate A logical variable, indicating whether or not to use the
+#' Squarem algorithm for acceleration of the EM algorithm. Default is TRUE
 #' @param R The number of bootstrap reptitions to use. Default is 500
 #' @param ci_type A character string with the type of bootstrap interval to be calculated. One of
 #' "norm", "perc", "basic", or "bca". See the documentation for
 #' \code{\link[boot]{boot.ci}} for more information. Default is "perc".
 #' @param conf A scalar between 0 and 1 containing the confidence level of the required intervals.
 #' Default is .95.
-#' @param ... Additional arguments to pass to the \code{\link[boot]{boot}}  function
+#' @param ... Additional arguments to pass to the \code{\link[boot]{boot}} function.
+#' If you want to use parallelize the bootstrapping, you can pass in the
+#' appropriate arguments here.
 #'
 #' @return A list, with \code{ci_L} and
 #' @export
 #'
 #' @importFrom boot boot boot.ci
-coda_lm_ci <- function(yout, ypred, accelerate = FALSE, R = 500, ci_type = "perc", conf = .95, ...) {
-    Nout <- nrow(yout)
-    Npred <- nrow(ypred)
+coda_lm_ci <- function(y, x, accelerate = TRUE, R = 500, ci_type = "perc", conf = .95, ...) {
+    Nout <- nrow(y)
+    Npred <- nrow(x)
     if(Nout != Npred) {
         stop("Outcomes and predictors do not have the same number of observations")
     }
-    ymat <- cbind(yout, ypred)
-    D1 <- ncol(yout)
-    D2 <- ncol(ypred)
+    ymat <- cbind(y, x)
+    D1 <- ncol(y)
+    D2 <- ncol(x)
     bootstraps <- boot(ymat, codalm_boot_fn, R = R, D1 = D1, D2 = D2, accelerate = accelerate, ...)
     ci_mat <- do.call(rbind, lapply(1:(D1*D2), function(i) {
         ci <- boot.ci(bootstraps, index = i, conf = conf, type = c("norm", "basic", "perc", "bca"))

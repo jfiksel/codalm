@@ -5,25 +5,38 @@
 \title{Permutation Test for Linear Independence Between Compositional Outcomes and Predictors}
 \usage{
 codalm_indep_test(
-  yout,
-  ypred,
+  y,
+  x,
   nperms = 500,
   init.seed = 123,
-  accelerate = FALSE
+  accelerate = TRUE,
+  parallel = FALSE,
+  ncpus = 1L,
+  windowsOS = FALSE
 )
 }
 \arguments{
-\item{yout}{A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+\item{y}{A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
 If any rows do not sum to 1, they will be renormalized}
 
-\item{ypred}{A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+\item{x}{A matrix of compositional predictors. Each row is an observation, and must sum to 1.
 If any rows do not sum to 1, they will be renormalized}
 
 \item{nperms}{The number of permutations. Default is 500.}
 
 \item{init.seed}{The initial seed for the permutations. Default is 123.}
 
-\item{accelerate}{A logical variable, indicating whether or not to use the Squarem algorithm for acceleration of the EM algorithm. Default is FALSE.}
+\item{accelerate}{A logical variable, indicating whether or not to use the
+Squarem algorithm for acceleration of the EM algorithm. Default is TRUE.}
+
+\item{parallel}{A logical variable, indicating whether or not to use a parallel
+operation for computing the permutation statistics}
+
+\item{ncpus}{An integer giving the number of clusters to be used in parallelization}
+
+\item{windowsOS}{A logical variable, indicating whether the user is using a
+Windows OS. Default is FALSE, and this is only necessary to supply if you set
+\code{parallel = TRUE}.}
 }
 \value{
 The p-value for the indepence test

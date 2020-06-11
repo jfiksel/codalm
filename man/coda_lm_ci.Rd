@@ -5,9 +5,9 @@
 \title{Bootstrap Confidence Intervals Linear Regression for Compositional Outcomes and Predictors}
 \usage{
 coda_lm_ci(
-  yout,
-  ypred,
-  accelerate = FALSE,
+  y,
+  x,
+  accelerate = TRUE,
   R = 500,
   ci_type = "perc",
   conf = 0.95,
@@ -15,14 +15,14 @@ coda_lm_ci(
 )
 }
 \arguments{
-\item{yout}{A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
+\item{y}{A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
 If any rows do not sum to 1, they will be renormalized}
 
-\item{ypred}{A matrix of compositional predictors. Each row is an observation, and must sum to 1.
+\item{x}{A matrix of compositional predictors. Each row is an observation, and must sum to 1.
 If any rows do not sum to 1, they will be renormalized}
 
-\item{accelerate}{A logical variable, indicating whether or not to use the Squarem algorithm
-for acceleration of the EM algorithm. Default is FALSE.}
+\item{accelerate}{A logical variable, indicating whether or not to use the
+Squarem algorithm for acceleration of the EM algorithm. Default is TRUE}
 
 \item{R}{The number of bootstrap reptitions to use. Default is 500}
 
@@ -33,7 +33,9 @@ for acceleration of the EM algorithm. Default is FALSE.}
 \item{conf}{A scalar between 0 and 1 containing the confidence level of the required intervals.
 Default is .95.}
 
-\item{...}{Additional arguments to pass to the \code{\link[boot]{boot}}  function}
+\item{...}{Additional arguments to pass to the \code{\link[boot]{boot}} function.
+If you want to use parallelize the bootstrapping, you can pass in the
+appropriate arguments here.}
 }
 \value{
 A list, with \code{ci_L} and
