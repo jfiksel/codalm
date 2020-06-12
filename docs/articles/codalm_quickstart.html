@@ -143,35 +143,59 @@
 <span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
 
 <span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
 <span class="no">B_ci</span>$<span class="no">ci_L</span>
 <span class="co">#&gt;              [,1]       [,2]         [,3]</span>
-<span class="co">#&gt; [1,] 9.536811e-01 0.01192243 9.971541e-04</span>
-<span class="co">#&gt; [2,] 7.962157e-22 0.96966026 6.301080e-15</span>
-<span class="co">#&gt; [3,] 2.389405e-19 0.01012468 8.961521e-01</span>
+<span class="co">#&gt; [1,] 9.463134e-01 0.01420827 1.575659e-03</span>
+<span class="co">#&gt; [2,] 1.043265e-14 0.97464848 3.353952e-15</span>
+<span class="co">#&gt; [3,] 6.223392e-22 0.02262966 9.084448e-01</span>
 <span class="no">B_ci</span>$<span class="no">ci_U</span>
-<span class="co">#&gt;              [,1]       [,2]         [,3]</span>
-<span class="co">#&gt; [1,] 9.861374e-01 0.04323247 5.170974e-03</span>
-<span class="co">#&gt; [2,] 3.033974e-02 1.00000000 4.567080e-07</span>
-<span class="co">#&gt; [3,] 5.668346e-07 0.10384788 9.898753e-01</span></pre></body></html></div>
-<p>You can also take advantage of parallelization, if you have multiple cores available. Note that the code below will likely not work for Windows users–please see the documentation for <code>boot</code> to see how one would parallelize for a Windows OS. Note that the number of cores is not required to be 4.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">4</span>
+<span class="co">#&gt;             [,1]       [,2]         [,3]</span>
+<span class="co">#&gt; [1,] 0.982105353 0.05127424 4.988409e-03</span>
+<span class="co">#&gt; [2,] 0.025351519 1.00000000 3.440186e-08</span>
+<span class="co">#&gt; [3,] 0.003149452 0.09155525 9.773703e-01</span></pre></body></html></div>
+<p>You can also take advantage of parallelization, if you have multiple cores available. Note that the code below uses different parallel operations for Windows &amp; Unix users. of cores is not required to be 4.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="fl">1</span>, <span class="kw pkg">parallel</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() - <span class="fl">1</span>)
+<span class="kw">if</span>(<span class="no">.Platform</span>$<span class="no">OS.type</span> <span class="kw">==</span> <span class="st">"unix"</span>) {
+  <span class="no">parallel</span> <span class="kw">&lt;-</span> <span class="st">"multicore"</span>
+} <span class="kw">else</span> {
+  <span class="no">parallel</span> <span class="kw">&lt;-</span> <span class="st">"snow"</span>
+}
 <span class="no">B_ci</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_ci.html">codalm_ci</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>, <span class="kw">nboot</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">ci_type</span> <span class="kw">=</span> <span class="st">"perc"</span>,
-                   <span class="kw">conf</span> <span class="kw">=</span> <span class="fl">.95</span>, <span class="kw">parallel</span> <span class="kw">=</span> <span class="st">"multicore"</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)</pre></body></html></div>
-<p>Finally, we will do a permutation test for linear independence. Again, we will only do 50 permutations as an example, but in practice this number should be higher.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>)
+                   <span class="kw">conf</span> <span class="kw">=</span> <span class="fl">.95</span>, <span class="kw">parallel</span> <span class="kw">=</span> <span class="no">parallel</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span>
+
+<span class="co">#&gt; Warning in norm.inter(t, adj.alpha): extreme order statistics used as endpoints</span></pre></body></html></div>
+<p>Finally, we will do a permutation test for linear independence. Again, we will only do 50 permutations as an example, but in practice this number should be higher. For demonstration purposes, we will generate the compositional outcome independently of the compositional predictor</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="kw pkg">gtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/gtools/man/dirichlet.html">rdirichlet</a></span>(<span class="fl">100</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>, <span class="fl">3</span>))
+<span class="no">y</span> <span class="kw">&lt;-</span> <span class="kw pkg">gtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/gtools/man/dirichlet.html">rdirichlet</a></span>(<span class="fl">100</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>, <span class="fl">3</span>))
+<span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
+                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">100</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>)
 <span class="no">indep_test_pval</span>
-<span class="co">#&gt; [1] 0</span></pre></body></html></div>
-<p>For those without a Windows OS, this function can be parallelized as follows:</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">4</span>
-<span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
-                                     <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)</pre></body></html></div>
-<p>And for those with a Windows OS:</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">4</span>
-<span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
-                                     <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>, <span class="kw">windowsOS</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<span class="co">#&gt; [1] 0.86</span></pre></body></html></div>
+<p>This function can also be parallelized. Unlike the bootstrapping, there is no need to differentiate between whether the user is using a Windows or Unix system.</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span>(<span class="kw">R_FUTURE_SUPPORTSMULTICORE_UNSTABLE</span> <span class="kw">=</span> <span class="st">"quiet"</span>)
+<span class="no">indep_test_pval_parallel</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
+                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">100</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
+                                     <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)
+<span class="no">indep_test_pval_parallel</span>
+<span class="co">#&gt; [1] 0.86</span></pre></body></html></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

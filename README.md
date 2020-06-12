@@ -14,6 +14,7 @@ You can install the current version of codalm for github using the `remotes` pac
 remotes::install_github("jfiksel/codalm")
 ```
 
-## Documentation
+## Example
 
-Please visit https://jfiksel.github.io/codalm/ to view documentation and a vignette
+View the vignette (https://jfiksel.github.io/codalm/articles/codalm_quickstart.html)
+for examples of how to use the codalm package

@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Transformation-free Linear Regression for Compositional Outcomes and Predictors">
-<meta property="og:description" content="Implements the EM algorithm as described in Fiksel et al. (2020)
+<meta property="og:description" content="Implements the EM algorithm as described in Fiksel et al. (2020) &lt;arXiv:2004.07881&gt;
     for transformation-free linear regression for
     compositional outcomes and predictors.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -80,6 +80,8 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+
+
 <div id="the-codalm-r-package" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#the-codalm-r-package" class="anchor"></a>The codalm R package</h1></div>
@@ -93,46 +95,10 @@
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
-<p>We will start by loading the <code>codalm</code> R package, as well as the <code>ggtern</code> package, which we will use to access the data.</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">codalm</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggtern</span>)</pre></div>
-<p>We will now load in the data from the ggtern package. We will be analyzing how two different methods (image analysis or microscopic inspection) estimate the composition of 30 white blood cells. The format that we need is for both compositions to be in matrices, with one row per observation. We will also normalize the rows of these matrices to ensure that they sum to 1, although the <code>codalm</code> function would also take care of this for us.</p>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"WhiteCells"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">'ggtern'</span>)
-<span class="no">image</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">WhiteCells</span>, <span class="no">Experiment</span> <span class="kw">==</span> <span class="st">"ImageAnalysis"</span>)
-<span class="no">image_mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">image</span>[,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"G"</span>, <span class="st">"L"</span>, <span class="st">"M"</span>)])
-<span class="no">microscopic</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">WhiteCells</span>, <span class="no">Experiment</span> <span class="kw">==</span> <span class="st">"MicroscopicInspection"</span>)
-<span class="no">microscopic_mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">microscopic</span>[,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"G"</span>, <span class="st">"L"</span>, <span class="st">"M"</span>)])
+<p>View the vignette (<a href="https://jfiksel.github.io/codalm/articles/codalm_quickstart.html" class="uri">https://jfiksel.github.io/codalm/articles/codalm_quickstart.html</a>) for examples of how to use the codalm package</p>
+</div>
+</div>
 
-<span class="no">image_mat</span>  <span class="kw">&lt;-</span> <span class="no">image_mat</span>  / <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">image_mat</span>)
-<span class="no">microscopic_mat</span> <span class="kw">&lt;-</span> <span class="no">microscopic_mat</span> / <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">microscopic_mat</span>)</pre></div>
-<p>To estimate the coefficient matrix B, we can use the <code>codalm</code> function.</p>
-<div class="sourceCode" id="cb4"><pre class="r"><span class="no">B_est</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/codalm.html">codalm</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>)
-<span class="no">B_est</span></pre></div>
-<p>We can also use the bootstrap to estimate 95% confidence intervals. We will only use 50 bootstrap iterations as an example (R = 50), but is recommended to do more.</p>
-<div class="sourceCode" id="cb5"><pre class="r"><span class="no">B_ci</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/codalm_ci.html">codalm_ci</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>, <span class="kw">nboot</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">ci_type</span> <span class="kw">=</span> <span class="st">"perc"</span>,
-                   <span class="kw">conf</span> <span class="kw">=</span> <span class="fl">.95</span>)
-<span class="no">B_ci</span>$<span class="no">ci_L</span>
-<span class="no">B_ci</span>$<span class="no">ci_U</span></pre></div>
-<p>You can also take advantage of parallelization, if you have multiple cores available. Note that the code below will likely not work for Windows users–please see the documentation for <code>boot</code> to see how one would parallelize for a Windows OS. Note that the number of cores is not required to be 4.</p>
-<div class="sourceCode" id="cb6"><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">4</span>
-<span class="no">B_ci</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/codalm_ci.html">codalm_ci</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>, <span class="kw">nboot</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">ci_type</span> <span class="kw">=</span> <span class="st">"perc"</span>,
-                   <span class="kw">conf</span> <span class="kw">=</span> <span class="fl">.95</span>, <span class="kw">parallel</span> <span class="kw">=</span> <span class="st">"multicore"</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)</pre></div>
-<p>Finally, we will do a permutation test for linear independence. Again, we will only do 50 permutations as an example, but in practice this number should be higher.</p>
-<div class="sourceCode" id="cb7"><pre class="r"><span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>)
-<span class="no">indep_test_pval</span></pre></div>
-<p>For those without a Windows OS, this function can be parallelized as follows:</p>
-<div class="sourceCode" id="cb8"><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">4</span>
-<span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
-                                     <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)</pre></div>
-<p>And for those with a Windows OS:</p>
-<div class="sourceCode" id="cb9"><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">4</span>
-<span class="no">indep_test_pval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">50</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
-                                     <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>, <span class="kw">windowsOS</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
-</div>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -154,11 +120,17 @@
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Jacob Fiksel <br><small class="roles"> Maintainer </small>  </li>
+<li>Jacob Fiksel <br><small class="roles"> Maintainer </small> <a href="https://orcid.org/0000-0001-7067-1334" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.com/jfiksel/codalm"><img src="https://travis-ci.com/jfiksel/codalm.svg?branch=master" alt="Travis build status"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
