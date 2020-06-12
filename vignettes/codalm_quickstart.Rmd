@@ -46,32 +46,30 @@ B_est <- codalm(y = microscopic_mat, x = image_mat)
 B_est
 ```
 
-To see the interpretation of this matrix, please see [Fiksel et al. (2020)](https://arxiv.org/abs/2004.07881). If all the rows of B_est are exactly
-the same, it is recommended to set `accelerate = FALSE` as a sensitivity check.
+To see the interpretation of this matrix, please see [Fiksel et al. (2020)](https://arxiv.org/abs/2004.07881). If all the rows of B_est are exactly the same, it is recommended to set `accelerate = FALSE` as a sensitivity check.
 
 We can also use the bootstrap to estimate 95% confidence intervals. We will
-only use 50 bootstrap iterations as an example (R = 50), but is recommended to do more.
+only use 50 bootstrap iterations as an example (nboot = 50), but is recommended to do more.
 
 ```{r bootstrap}
-B_ci <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50, ci_type = "perc",
+B_ci <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50,
                    conf = .95)
 B_ci$ci_L
 B_ci$ci_U
 ```
 
+These matrices given the lower and upper bounds for the confidence interval for each
+element of the coefficient matrix.
+
 You can also take advantage of parallelization, if you have multiple cores available.
-Note that the code below uses different parallel operations for Windows & Unix users.
-of cores is not required to be 4.
 
 ```{r bootstrap_parallel}
 ncores <- max(1, parallel::detectCores() - 1)
-if(.Platform$OS.type == "unix") {
-  parallel <- "multicore"
-} else {
-  parallel <- "snow"
-}
-B_ci <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50, ci_type = "perc",
-                   conf = .95, parallel = parallel, ncpus = ncores)
+Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE = "quiet")
+B_ci_parallel <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50,
+                   conf = .95, parallel = TRUE, ncpus = ncores)
+identical(B_ci$ci_L, B_ci_parallel$ci_L)
+identical(B_ci$ci_U, B_ci_parallel$ci_U)
 ```
 
 Finally, we will do a permutation test for linear independence. Again, we will only do 50
@@ -91,7 +89,6 @@ This function can also be parallelized. Unlike the bootstrapping, there is no ne
 to differentiate between whether the user is using a Windows or Unix system.
 
 ```{r independence_test_parallel}
-Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE = "quiet")
 indep_test_pval_parallel <- codalm_indep_test(y = y, x = x,
                                      nperms = 100, init.seed = 123,
                                      parallel = TRUE, ncpus = ncores)

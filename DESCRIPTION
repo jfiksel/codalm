@@ -15,7 +15,6 @@ License: GPL-2
 biocViews:
 Imports:
     SQUAREM (>= 2020.3),
-    boot,
     future,
     future.apply
 Encoding: UTF-8

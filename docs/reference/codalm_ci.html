@@ -40,8 +40,9 @@
 
 
 <meta property="og:title" content="Bootstrap Confidence Intervals Linear Regression for Compositional Outcomes and Predictors — codalm_ci" />
-<meta property="og:description" content="Implements the EM algorithm as described in Fiksel et al. (2020)
-for transformation-free linear regression for compositional outcomes and predictors." />
+<meta property="og:description" content="Implements percentile based bootstrapping to estimate the confidence intervals
+for the regression coefficients when doing linear regression for compositional outcomes
+and predictors" />
 
 
 
@@ -127,8 +128,9 @@ for transformation-free linear regression for compositional outcomes and predict
     </div>
 
     <div class="ref-description">
-    <p>Implements the EM algorithm as described in Fiksel et al. (2020)
-for transformation-free linear regression for compositional outcomes and predictors.</p>
+    <p>Implements percentile based bootstrapping to estimate the confidence intervals
+for the regression coefficients when doing linear regression for compositional outcomes
+and predictors</p>
     </div>
 
     <pre class="usage"><span class='fu'>codalm_ci</span>(
@@ -136,9 +138,10 @@ for transformation-free linear regression for compositional outcomes and predict
   <span class='no'>x</span>,
   <span class='kw'>accelerate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>nboot</span> <span class='kw'>=</span> <span class='fl'>500</span>,
-  <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='st'>"perc"</span>,
   <span class='kw'>conf</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
-  <span class='no'>...</span>
+  <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>ncpus</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>init.seed</span> <span class='kw'>=</span> <span class='fl'>123</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -164,27 +167,30 @@ Squarem algorithm for acceleration of the EM algorithm. Default is TRUE</p></td>
       <td><p>The number of bootstrap reptitions to use. Default is 500</p></td>
     </tr>
     <tr>
-      <th>ci_type</th>
-      <td><p>A character string with the type of bootstrap interval to be calculated. One of
-"norm", "perc", "basic", or "bca". See the documentation for
-<code><a href='https://rdrr.io/pkg/boot/man/boot.ci.html'>boot.ci</a></code> for more information. Default is "perc".</p></td>
-    </tr>
-    <tr>
       <th>conf</th>
       <td><p>A scalar between 0 and 1 containing the confidence level of the required intervals.
 Default is .95.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Additional arguments to pass to the <code><a href='https://rdrr.io/pkg/boot/man/boot.html'>boot</a></code> function.
-If you want to use parallelize the bootstrapping, you can pass in the
-appropriate arguments here.</p></td>
+      <th>parallel</th>
+      <td><p>A logical variable, indicating whether or not to use a parallel
+operation for computing the permutation statistics</p></td>
+    </tr>
+    <tr>
+      <th>ncpus</th>
+      <td><p>Optional argument. When provided, is an integer giving the number
+of clusters to be used in parallelization. Defaults to the number of cores, minus 1.</p></td>
+    </tr>
+    <tr>
+      <th>init.seed</th>
+      <td><p>The initial seed for the permutations. Default is 123.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list, with <code>ci_L</code> and</p>
+    <p>A list, with <code>ci_L</code> and <code>ci_U</code>, giving the lower and upper bounds
+of each element of the B matrix</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>ggtern</span>)
@@ -195,17 +201,17 @@ appropriate arguments here.</p></td>
 <span class='no'>microscopic_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>microscopic</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"G"</span>, <span class='st'>"L"</span>, <span class='st'>"M"</span>)])
 <span class='no'>x</span>  <span class='kw'>&lt;-</span> <span class='no'>image_mat</span>  / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>image_mat</span>)
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>microscopic_mat</span> / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>microscopic_mat</span>)
-<span class='fu'>codalm_ci</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>nboot</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='st'>"perc"</span>, <span class='kw'>conf</span> <span class='kw'>=</span> <span class='fl'>.95</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; <span class='warning'>Warning: extreme order statistics used as endpoints</span></div><div class='output co'>#&gt; $ci_L
-#&gt;              [,1]         [,2]         [,3]
-#&gt; [1,] 9.426786e-01 1.154185e-02 9.550892e-04
-#&gt; [2,] 1.542272e-17 9.637253e-01 4.235204e-16
-#&gt; [3,] 9.604150e-18 8.208338e-08 8.946832e-01
+<span class='fu'>codalm_ci</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>nboot</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>conf</span> <span class='kw'>=</span> <span class='fl'>.95</span>)</div><div class='output co'>#&gt; $ci_L
+#&gt;              [,1]       [,2]         [,3]
+#&gt; [1,] 9.576089e-01 0.01399186 1.156448e-03
+#&gt; [2,] 2.512029e-15 0.97220006 9.764192e-17
+#&gt; [3,] 6.197244e-21 0.01165546 9.145955e-01
 #&gt; 
 #&gt; $ci_U
-#&gt;            [,1]       [,2]         [,3]
-#&gt; [1,] 0.98599467 0.05516547 5.937150e-03
-#&gt; [2,] 0.03627470 1.00000000 2.574564e-08
-#&gt; [3,] 0.01291892 0.10531676 9.955661e-01
+#&gt;              [,1]       [,2]         [,3]
+#&gt; [1,] 9.837854e-01 0.03981767 4.560504e-03
+#&gt; [2,] 2.779953e-02 1.00000000 4.198096e-07
+#&gt; [3,] 3.143104e-06 0.08540455 9.868145e-01
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

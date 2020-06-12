@@ -95,17 +95,18 @@ codalm <- function(y, x, accelerate = TRUE) {
     return(B_est)
 }
 
-codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
-    y <- ymat[indices, 1:D1]
-    x <- ymat[indices, (D1+1):(D1+D2)]
-    B_est <- codalm(y, x, accelerate = accelerate)
-    return(as.vector(B_est))
+codalm_boot_fn <- function(y, x, indices, accelerate) {
+    yboot <- y[indices,]
+    xboot <- x[indices,]
+    B_est <- codalm(yboot, xboot, accelerate = accelerate)
+    return(B_est)
 }
 
 #' @title Bootstrap Confidence Intervals Linear Regression for Compositional Outcomes and Predictors
 #'
-#' @description Implements the EM algorithm as described in Fiksel et al. (2020)
-#' for transformation-free linear regression for compositional outcomes and predictors.
+#' @description Implements percentile based bootstrapping to estimate the confidence intervals
+#' for the regression coefficients when doing linear regression for compositional outcomes
+#' and predictors
 #'
 #' @param y A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
 #' If any rows do not sum to 1, they will be renormalized
@@ -114,16 +115,16 @@ codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
 #' @param accelerate A logical variable, indicating whether or not to use the
 #' Squarem algorithm for acceleration of the EM algorithm. Default is TRUE
 #' @param nboot The number of bootstrap reptitions to use. Default is 500
-#' @param ci_type A character string with the type of bootstrap interval to be calculated. One of
-#' "norm", "perc", "basic", or "bca". See the documentation for
-#' \code{\link[boot]{boot.ci}} for more information. Default is "perc".
 #' @param conf A scalar between 0 and 1 containing the confidence level of the required intervals.
 #' Default is .95.
-#' @param ... Additional arguments to pass to the \code{\link[boot]{boot}} function.
-#' If you want to use parallelize the bootstrapping, you can pass in the
-#' appropriate arguments here.
+#' @param parallel A logical variable, indicating whether or not to use a parallel
+#' operation for computing the permutation statistics
+#' @param ncpus Optional argument. When provided, is an integer giving the number
+#' of clusters to be used in parallelization. Defaults to the number of cores, minus 1.
+#' @param init.seed The initial seed for the permutations. Default is 123.
 #'
-#' @return A list, with \code{ci_L} and
+#' @return A list, with \code{ci_L} and \code{ci_U}, giving the lower and upper bounds
+#' of each element of the B matrix
 #' @export
 #'
 #' @importFrom boot boot boot.ci
@@ -136,8 +137,9 @@ codalm_boot_fn <- function(ymat, indices, D1, D2, accelerate) {
 #' microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
 #' x  <- image_mat  / rowSums(image_mat)
 #' y <- microscopic_mat / rowSums(microscopic_mat)
-#' codalm_ci(y, x, nboot = 50, ci_type = "perc", conf = .95)
-codalm_ci <- function(y, x, accelerate = TRUE, nboot = 500, ci_type = "perc", conf = .95, ...) {
+#' codalm_ci(y, x, nboot = 50, conf = .95)
+codalm_ci <- function(y, x, accelerate = TRUE, nboot = 500, conf = .95,
+                      parallel = FALSE, ncpus = NULL, init.seed = 123) {
     Nout <- nrow(y)
     Npred <- nrow(x)
     if(Nout != Npred) {
@@ -146,22 +148,30 @@ codalm_ci <- function(y, x, accelerate = TRUE, nboot = 500, ci_type = "perc", co
     ymat <- cbind(y, x)
     D1 <- ncol(y)
     D2 <- ncol(x)
-    bootstraps <- boot(ymat, codalm_boot_fn, R = nboot, D1 = D1, D2 = D2, accelerate = accelerate, ...)
-    ci_mat <- do.call(rbind, lapply(1:(D1*D2), function(i) {
-        ci <- boot.ci(bootstraps, index = i, conf = conf, type = c("norm", "basic", "perc", "bca"))
-        if(ci_type == "norm") {
-            return(ci$normal[,2:3])
-        } else if (ci_type == "basic") {
-            return(ci$basic[,4:5])
-        } else if (ci_type == "perc") {
-            return(ci$percent[,4:5])
+    ### Get do permutation test
+    RNGkind("L'Ecuyer-CMRG")
+    if(parallel == FALSE) {
+        plan(sequential)
+    } else {
+        if(is.null(ncpus)) {
+            nworkers <- availableCores() - 1
         } else {
-            return(ci$bca[,4:5])
+            nworkers <- min(availableCores() - 1, ncpus)
         }
-    }))
-    ci_L <- as.vector(ci_mat[,1])
-    dim(ci_L) <- c(D2, D1)
-    ci_U<- as.vector(ci_mat[,2])
-    dim(ci_U) <- c(D2, D1)
+        plan(multiprocess, workers = nworkers)
+
+    }
+    bootstraps <- future_lapply(1:nboot, function(i) {
+        boot_index <- sample(1:nrow(y), replace = TRUE)
+        yboot <- y[boot_index,]
+        xboot <- x[boot_index,]
+        B_est <- codalm(yboot, xboot, accelerate = accelerate)
+        return(B_est)
+    }, future.seed = init.seed)
+    prob_L <- (1 - conf)/2
+    prob_U <- conf + prob_L
+    quantiles <- apply(simplify2array(bootstraps), 1:2, quantile, prob = c(prob_L, prob_U))
+    ci_L <- quantiles[1,,]
+    ci_U <- quantiles[2,,]
     return(list(ci_L = ci_L, ci_U = ci_U))
 }

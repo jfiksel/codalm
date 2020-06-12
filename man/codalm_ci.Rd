@@ -9,9 +9,10 @@ codalm_ci(
   x,
   accelerate = TRUE,
   nboot = 500,
-  ci_type = "perc",
   conf = 0.95,
-  ...
+  parallel = FALSE,
+  ncpus = NULL,
+  init.seed = 123
 )
 }
 \arguments{
@@ -26,23 +27,25 @@ Squarem algorithm for acceleration of the EM algorithm. Default is TRUE}
 
 \item{nboot}{The number of bootstrap reptitions to use. Default is 500}
 
-\item{ci_type}{A character string with the type of bootstrap interval to be calculated. One of
-"norm", "perc", "basic", or "bca". See the documentation for
-\code{\link[boot]{boot.ci}} for more information. Default is "perc".}
-
 \item{conf}{A scalar between 0 and 1 containing the confidence level of the required intervals.
 Default is .95.}
 
-\item{...}{Additional arguments to pass to the \code{\link[boot]{boot}} function.
-If you want to use parallelize the bootstrapping, you can pass in the
-appropriate arguments here.}
+\item{parallel}{A logical variable, indicating whether or not to use a parallel
+operation for computing the permutation statistics}
+
+\item{ncpus}{Optional argument. When provided, is an integer giving the number
+of clusters to be used in parallelization. Defaults to the number of cores, minus 1.}
+
+\item{init.seed}{The initial seed for the permutations. Default is 123.}
 }
 \value{
-A list, with \code{ci_L} and
+A list, with \code{ci_L} and \code{ci_U}, giving the lower and upper bounds
+of each element of the B matrix
 }
 \description{
-Implements the EM algorithm as described in Fiksel et al. (2020)
-for transformation-free linear regression for compositional outcomes and predictors.
+Implements percentile based bootstrapping to estimate the confidence intervals
+for the regression coefficients when doing linear regression for compositional outcomes
+and predictors
 }
 \examples{
 require(ggtern)
@@ -53,5 +56,5 @@ microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
 microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
 x  <- image_mat  / rowSums(image_mat)
 y <- microscopic_mat / rowSums(microscopic_mat)
-codalm_ci(y, x, nboot = 50, ci_type = "perc", conf = .95)
+codalm_ci(y, x, nboot = 50, conf = .95)
 }
