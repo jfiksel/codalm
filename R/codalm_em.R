@@ -127,7 +127,9 @@ codalm_boot_fn <- function(y, x, indices, accelerate) {
 #' of each element of the B matrix
 #' @export
 #'
-#' @importFrom boot boot boot.ci
+#' @import future
+#' @import future.apply
+#' @importFrom stats quantile
 #' @examples
 #' require(ggtern)
 #' data("WhiteCells", package = 'ggtern')
