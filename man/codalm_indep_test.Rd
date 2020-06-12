@@ -11,8 +11,7 @@ codalm_indep_test(
   init.seed = 123,
   accelerate = TRUE,
   parallel = FALSE,
-  ncpus = 1L,
-  windowsOS = FALSE
+  ncpus = NULL
 )
 }
 \arguments{
@@ -32,11 +31,8 @@ Squarem algorithm for acceleration of the EM algorithm. Default is TRUE.}
 \item{parallel}{A logical variable, indicating whether or not to use a parallel
 operation for computing the permutation statistics}
 
-\item{ncpus}{An integer giving the number of clusters to be used in parallelization}
-
-\item{windowsOS}{A logical variable, indicating whether the user is using a
-Windows OS. Default is FALSE, and this is only necessary to supply if you set
-\code{parallel = TRUE}.}
+\item{ncpus}{Optional argument. When provided, is an integer giving the number
+of clusters to be used in parallelization. Defaults to the number of cores, minus 1.}
 }
 \value{
 The p-value for the indepence test

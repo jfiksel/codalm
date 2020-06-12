@@ -19,17 +19,14 @@ logLikComp <- function(y, x, M) {
 #' Squarem algorithm for acceleration of the EM algorithm. Default is TRUE.
 #' @param parallel A logical variable, indicating whether or not to use a parallel
 #' operation for computing the permutation statistics
-#' @param ncpus An integer giving the number of clusters to be used in parallelization
-#' @param windowsOS A logical variable, indicating whether the user is using a
-#' Windows OS. Default is FALSE, and this is only necessary to supply if you set
-#' \code{parallel = TRUE}.
+#' @param ncpus Optional argument. When provided, is an integer giving the number
+#' of clusters to be used in parallelization. Defaults to the number of cores, minus 1.
 #'
 #' @return The p-value for the indepence test
 #' @export
 #'
-#' @import doParallel
-#' @import foreach
-#' @import doRNG
+#' @import future
+#' @import future.apply
 #' @examples
 #' require(gtools)
 #' x <- rdirichlet(100, c(1, 1, 1))
@@ -45,7 +42,7 @@ logLikComp <- function(y, x, M) {
 #' x  <- image_mat  / rowSums(image_mat)
 #' y <- microscopic_mat / rowSums(microscopic_mat)
 codalm_indep_test <- function(y, x, nperms = 500, init.seed = 123, accelerate = TRUE,
-                              parallel = FALSE, ncpus = 1L, windowsOS = FALSE) {
+                              parallel = FALSE, ncpus = NULL) {
     Nout <- nrow(y)
     Npred <- nrow(x)
     if(Nout != Npred) {
@@ -68,32 +65,23 @@ codalm_indep_test <- function(y, x, nperms = 500, init.seed = 123, accelerate = 
     ### Get do permutation test
     RNGkind("L'Ecuyer-CMRG")
     if(parallel == FALSE) {
-        set.seed(init.seed)
-        permut_stats <- sapply(1:nperms, function(i) {
-            perm_index <- sample(1:nrow(x))
-            x_perm <- x[perm_index,]
-            B_perm <- codalm(y, x_perm, accelerate = accelerate)
-            ll_perm <- logLikComp(y, x_perm, B_perm)
-            return(ll_perm - ll_null)
-        })
+        plan(sequential)
     } else {
-        if(windowsOS == FALSE) {
-            registerDoParallel(cores=ncpus)
+        if(is.null(ncpus)) {
+            nworkers <- availableCores() - 1
         } else {
-            cl <- parallel::makeCluster(ncpus)
-            registerDoParallel(cl)
+            nworkers <- min(availableCores() - 1, ncpus)
         }
-        permut_stats <- foreach(1:nperms, .combine = c, .options.RNG=init.seed) %dorng% {
-            perm_index <- sample(1:nrow(x))
-            x_perm <- x[perm_index,]
-            B_perm <- codalm(y, x_perm, accelerate = accelerate)
-            ll_perm <- logLikComp(y, x_perm, B_perm)
-            return(ll_perm - ll_null)
-        }
-        if(windowsOS == TRUE) {
-            parallel::stopCluster(cl)
-        }
+        plan(multiprocess, workers = nworkers)
+
     }
+    permut_stats <- future_sapply(1:nperms, function(i) {
+        perm_index <- sample(1:nrow(x))
+        x_perm <- x[perm_index,]
+        B_perm <- codalm(y, x_perm, accelerate = accelerate)
+        ll_perm <- logLikComp(y, x_perm, B_perm)
+        return(ll_perm - ll_null)
+    }, future.seed = init.seed)
     pval <- mean(permut_stats >= llr_obs)
     return(pval)
 }
