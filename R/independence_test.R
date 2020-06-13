@@ -7,7 +7,7 @@ logLikComp <- function(y, x, M) {
 #' @title Permutation Test for Linear Independence Between Compositional Outcomes and Predictors
 #'
 #' @description Implements the loss function based permutation test as described in Fiksel et al. (2020)
-#' for a test of linear indepence between compositional outcomes and predictors.
+#' for a test of linear independence between compositional outcomes and predictors.
 #'
 #' @param y A matrix of compositional outcomes. Each row is an observation, and must sum to 1.
 #' If any rows do not sum to 1, they will be renormalized
@@ -22,7 +22,7 @@ logLikComp <- function(y, x, M) {
 #' @param ncpus Optional argument. When provided, is an integer giving the number
 #' of clusters to be used in parallelization. Defaults to the number of cores, minus 1.
 #'
-#' @return The p-value for the indepence test
+#' @return The p-value for the independence test
 #' @export
 #'
 #' @import future

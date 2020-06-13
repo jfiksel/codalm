@@ -35,11 +35,11 @@ operation for computing the permutation statistics}
 of clusters to be used in parallelization. Defaults to the number of cores, minus 1.}
 }
 \value{
-The p-value for the indepence test
+The p-value for the independence test
 }
 \description{
 Implements the loss function based permutation test as described in Fiksel et al. (2020)
-for a test of linear indepence between compositional outcomes and predictors.
+for a test of linear independence between compositional outcomes and predictors.
 }
 \examples{
 require(gtools)

@@ -114,7 +114,7 @@ codalm_boot_fn <- function(y, x, indices, accelerate) {
 #' If any rows do not sum to 1, they will be renormalized
 #' @param accelerate A logical variable, indicating whether or not to use the
 #' Squarem algorithm for acceleration of the EM algorithm. Default is TRUE
-#' @param nboot The number of bootstrap reptitions to use. Default is 500
+#' @param nboot The number of bootstrap repetitions to use. Default is 500
 #' @param conf A scalar between 0 and 1 containing the confidence level of the required intervals.
 #' Default is .95.
 #' @param parallel A logical variable, indicating whether or not to use a parallel

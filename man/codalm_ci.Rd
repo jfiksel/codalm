@@ -25,7 +25,7 @@ If any rows do not sum to 1, they will be renormalized}
 \item{accelerate}{A logical variable, indicating whether or not to use the
 Squarem algorithm for acceleration of the EM algorithm. Default is TRUE}
 
-\item{nboot}{The number of bootstrap reptitions to use. Default is 500}
+\item{nboot}{The number of bootstrap repetitions to use. Default is 500}
 
 \item{conf}{A scalar between 0 and 1 containing the confidence level of the required intervals.
 Default is .95.}
