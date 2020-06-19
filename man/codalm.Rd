@@ -14,14 +14,17 @@ If any rows do not sum to 1, they will be renormalized}
 If any rows do not sum to 1, they will be renormalized}
 
 \item{accelerate}{A logical variable, indicating whether or not to use the
-Squarem #algorithm for acceleration of the EM algorithm. Default is TRUE.}
+Squarem algorithm for acceleration of the EM algorithm. Default is TRUE.}
 }
 \value{
-A \eqn{D_s} x \eqn{D_r} compositional coefficient matrix, where \eqn{D_s} and \eqn{D_r}  are the dimensions of the compositional predictor and outcome, respectively
+A \eqn{D_s} x \eqn{D_r} compositional coefficient matrix, where
+\eqn{D_s} and \eqn{D_r}  are the dimensions of the compositional predictor
+and outcome, respectively
 }
 \description{
-Implements the EM algorithm as described in Fiksel et al. (2020)
-for transformation-free linear regression for compositional outcomes and predictors.
+Implements the expectation-maximization (EM) algorithm as described
+in Fiksel et al. (2020) for transformation-free linear regression for
+compositional outcomes and predictors.
 }
 \examples{
 require(ggtern)
@@ -30,8 +33,9 @@ image <- subset(WhiteCells, Experiment == "ImageAnalysis")
 image_mat <- as.matrix(image[,c("G", "L", "M")])
 microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
 microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
-x  <- image_mat  / rowSums(image_mat)
+x <- image_mat  / rowSums(image_mat)
 y <- microscopic_mat / rowSums(microscopic_mat)
+codalm(y, x)
 }
 \references{
 \url{https://arxiv.org/abs/2004.07881}

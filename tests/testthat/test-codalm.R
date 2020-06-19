@@ -1,0 +1,13 @@
+test_that("codalm works", {
+    require(gtools)
+    require(future)
+    set.seed(123)
+    x <- rdirichlet(100, rep(1, 2))
+    y <- rdirichlet(100, rep(1, 3))
+    B_est <- codalm(y, x)
+    B_row_sums <- rowSums(B_est)
+    expect_true(is.matrix(B_est))
+    expect_true(max(abs(B_row_sums - 1)) < 1e-8)
+    expect_true(mean(B_est >= 0) == 1)
+    expect_true(all.equal(dim(B_est), c(2,3)))
+})

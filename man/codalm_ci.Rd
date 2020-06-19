@@ -12,6 +12,7 @@ codalm_ci(
   conf = 0.95,
   parallel = FALSE,
   ncpus = NULL,
+  strategy = NULL,
   init.seed = 123
 )
 }
@@ -36,6 +37,10 @@ operation for computing the permutation statistics}
 \item{ncpus}{Optional argument. When provided, is an integer giving the number
 of clusters to be used in parallelization. Defaults to the number of cores, minus 1.}
 
+\item{strategy}{Optional argument. When provided, this will be the evaluation function
+(or name of it) to use for parallel computation (if parallel = TRUE). Otherwise,
+if parallel = TRUE, then this will default to multisession. See \code{\link[future]{plan}}.}
+
 \item{init.seed}{The initial seed for the permutations. Default is 123.}
 }
 \value{
@@ -54,7 +59,7 @@ image <- subset(WhiteCells, Experiment == "ImageAnalysis")
 image_mat <- as.matrix(image[,c("G", "L", "M")])
 microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
 microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
-x  <- image_mat  / rowSums(image_mat)
+x <- image_mat  / rowSums(image_mat)
 y <- microscopic_mat / rowSums(microscopic_mat)
 codalm_ci(y, x, nboot = 50, conf = .95)
 }

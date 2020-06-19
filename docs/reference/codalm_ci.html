@@ -101,6 +101,9 @@ and predictors" />
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -141,6 +144,7 @@ and predictors</p>
   <span class='kw'>conf</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
   <span class='kw'>parallel</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>ncpus</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>strategy</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>init.seed</span> <span class='kw'>=</span> <span class='fl'>123</span>
 )</pre>
 
@@ -164,7 +168,7 @@ Squarem algorithm for acceleration of the EM algorithm. Default is TRUE</p></td>
     </tr>
     <tr>
       <th>nboot</th>
-      <td><p>The number of bootstrap reptitions to use. Default is 500</p></td>
+      <td><p>The number of bootstrap repetitions to use. Default is 500</p></td>
     </tr>
     <tr>
       <th>conf</th>
@@ -180,6 +184,12 @@ operation for computing the permutation statistics</p></td>
       <th>ncpus</th>
       <td><p>Optional argument. When provided, is an integer giving the number
 of clusters to be used in parallelization. Defaults to the number of cores, minus 1.</p></td>
+    </tr>
+    <tr>
+      <th>strategy</th>
+      <td><p>Optional argument. When provided, this will be the evaluation function
+(or name of it) to use for parallel computation (if parallel = TRUE). Otherwise,
+if parallel = TRUE, then this will default to multisession. See <code><a href='https://rdrr.io/pkg/future/man/plan.html'>plan</a></code>.</p></td>
     </tr>
     <tr>
       <th>init.seed</th>
@@ -199,7 +209,7 @@ of each element of the B matrix</p>
 <span class='no'>image_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>image</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"G"</span>, <span class='st'>"L"</span>, <span class='st'>"M"</span>)])
 <span class='no'>microscopic</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>WhiteCells</span>, <span class='no'>Experiment</span> <span class='kw'>==</span> <span class='st'>"MicroscopicInspection"</span>)
 <span class='no'>microscopic_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>microscopic</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"G"</span>, <span class='st'>"L"</span>, <span class='st'>"M"</span>)])
-<span class='no'>x</span>  <span class='kw'>&lt;-</span> <span class='no'>image_mat</span>  / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>image_mat</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='no'>image_mat</span>  / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>image_mat</span>)
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>microscopic_mat</span> / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>microscopic_mat</span>)
 <span class='fu'>codalm_ci</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>nboot</span> <span class='kw'>=</span> <span class='fl'>50</span>, <span class='kw'>conf</span> <span class='kw'>=</span> <span class='fl'>.95</span>)</div><div class='output co'>#&gt; $ci_L
 #&gt;              [,1]       [,2]         [,3]

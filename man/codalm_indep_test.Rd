@@ -8,10 +8,11 @@ codalm_indep_test(
   y,
   x,
   nperms = 500,
-  init.seed = 123,
   accelerate = TRUE,
   parallel = FALSE,
-  ncpus = NULL
+  ncpus = NULL,
+  strategy = NULL,
+  init.seed = 123
 )
 }
 \arguments{
@@ -23,8 +24,6 @@ If any rows do not sum to 1, they will be renormalized}
 
 \item{nperms}{The number of permutations. Default is 500.}
 
-\item{init.seed}{The initial seed for the permutations. Default is 123.}
-
 \item{accelerate}{A logical variable, indicating whether or not to use the
 Squarem algorithm for acceleration of the EM algorithm. Default is TRUE.}
 
@@ -33,13 +32,20 @@ operation for computing the permutation statistics}
 
 \item{ncpus}{Optional argument. When provided, is an integer giving the number
 of clusters to be used in parallelization. Defaults to the number of cores, minus 1.}
+
+\item{strategy}{Optional argument. When provided, this will be the evaluation function
+(or name of it) to use for parallel computation (if parallel = TRUE). Otherwise,
+if parallel = TRUE, then this will default to multisession. See \code{\link[future]{plan}}.}
+
+\item{init.seed}{The initial seed for the permutations. Default is 123.}
 }
 \value{
 The p-value for the independence test
 }
 \description{
-Implements the loss function based permutation test as described in Fiksel et al. (2020)
-for a test of linear independence between compositional outcomes and predictors.
+Implements the loss function based permutation test as described
+in Fiksel et al. (2020) for a test of linear independence between compositional
+outcomes and predictors.
 }
 \examples{
 require(gtools)
@@ -55,4 +61,5 @@ microscopic <- subset(WhiteCells, Experiment == "MicroscopicInspection")
 microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
 x  <- image_mat  / rowSums(image_mat)
 y <- microscopic_mat / rowSums(microscopic_mat)
+codalm_indep_test(y, x)
 }

@@ -64,10 +64,10 @@ element of the coefficient matrix.
 You can also take advantage of parallelization, if you have multiple cores available.
 
 ```{r bootstrap_parallel}
-ncores <- max(1, parallel::detectCores() - 1)
+ncores <- 2
 Sys.setenv(R_FUTURE_SUPPORTSMULTICORE_UNSTABLE = "quiet")
 B_ci_parallel <- codalm_ci(y = microscopic_mat, x = image_mat, nboot = 50,
-                   conf = .95, parallel = TRUE, ncpus = ncores)
+                   conf = .95, parallel = TRUE, ncpus = ncores, strategy = 'multisession')
 identical(B_ci$ci_L, B_ci_parallel$ci_L)
 identical(B_ci$ci_U, B_ci_parallel$ci_U)
 ```
@@ -90,8 +90,9 @@ to differentiate between whether the user is using a Windows or Unix system.
 
 ```{r independence_test_parallel}
 indep_test_pval_parallel <- codalm_indep_test(y = y, x = x,
-                                     nperms = 100, init.seed = 123,
-                                     parallel = TRUE, ncpus = ncores)
+                                              nperms = 100, init.seed = 123,
+                                              parallel = TRUE, ncpus = ncores,
+                                              strategy = 'multisession')
 indep_test_pval_parallel
 ```
 

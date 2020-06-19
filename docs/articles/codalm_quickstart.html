@@ -58,6 +58,9 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -140,10 +143,10 @@
 <span class="co">#&gt; [3,] 3.143104e-06 0.08540455 9.868145e-01</span></pre></body></html></div>
 <p>These matrices given the lower and upper bounds for the confidence interval for each element of the coefficient matrix.</p>
 <p>You can also take advantage of parallelization, if you have multiple cores available.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="fl">1</span>, <span class="kw pkg">parallel</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>() - <span class="fl">1</span>)
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">ncores</span> <span class="kw">&lt;-</span> <span class="fl">2</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span>(<span class="kw">R_FUTURE_SUPPORTSMULTICORE_UNSTABLE</span> <span class="kw">=</span> <span class="st">"quiet"</span>)
 <span class="no">B_ci_parallel</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_ci.html">codalm_ci</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">microscopic_mat</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">image_mat</span>, <span class="kw">nboot</span> <span class="kw">=</span> <span class="fl">50</span>,
-                   <span class="kw">conf</span> <span class="kw">=</span> <span class="fl">.95</span>, <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)
+                   <span class="kw">conf</span> <span class="kw">=</span> <span class="fl">.95</span>, <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>, <span class="kw">strategy</span> <span class="kw">=</span> <span class="st">'multisession'</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="no">B_ci</span>$<span class="no">ci_L</span>, <span class="no">B_ci_parallel</span>$<span class="no">ci_L</span>)
 <span class="co">#&gt; [1] TRUE</span>
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span>(<span class="no">B_ci</span>$<span class="no">ci_U</span>, <span class="no">B_ci_parallel</span>$<span class="no">ci_U</span>)
@@ -158,8 +161,9 @@
 <span class="co">#&gt; [1] 0.28</span></pre></body></html></div>
 <p>This function can also be parallelized. Unlike the bootstrapping, there is no need to differentiate between whether the user is using a Windows or Unix system.</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">indep_test_pval_parallel</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/codalm_indep_test.html">codalm_indep_test</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>,
-                                     <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">100</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
-                                     <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>)
+                                              <span class="kw">nperms</span> <span class="kw">=</span> <span class="fl">100</span>, <span class="kw">init.seed</span> <span class="kw">=</span> <span class="fl">123</span>,
+                                              <span class="kw">parallel</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">ncpus</span> <span class="kw">=</span> <span class="no">ncores</span>,
+                                              <span class="kw">strategy</span> <span class="kw">=</span> <span class="st">'multisession'</span>)
 <span class="no">indep_test_pval_parallel</span>
 <span class="co">#&gt; [1] 0.28</span></pre></body></html></div>
   </div>

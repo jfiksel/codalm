@@ -40,8 +40,9 @@
 
 
 <meta property="og:title" content="Transformation-free Linear Regression for Compositional Outcomes and Predictors — codalm" />
-<meta property="og:description" content="Implements the EM algorithm as described in Fiksel et al. (2020)
-for transformation-free linear regression for compositional outcomes and predictors." />
+<meta property="og:description" content="Implements the expectation-maximization (EM) algorithm as described
+in Fiksel et al. (2020) for transformation-free linear regression for
+compositional outcomes and predictors." />
 
 
 
@@ -100,6 +101,9 @@ for transformation-free linear regression for compositional outcomes and predict
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -127,8 +131,9 @@ for transformation-free linear regression for compositional outcomes and predict
     </div>
 
     <div class="ref-description">
-    <p>Implements the EM algorithm as described in Fiksel et al. (2020)
-for transformation-free linear regression for compositional outcomes and predictors.</p>
+    <p>Implements the expectation-maximization (EM) algorithm as described
+in Fiksel et al. (2020) for transformation-free linear regression for
+compositional outcomes and predictors.</p>
     </div>
 
     <pre class="usage"><span class='fu'>codalm</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>accelerate</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
@@ -149,13 +154,15 @@ If any rows do not sum to 1, they will be renormalized</p></td>
     <tr>
       <th>accelerate</th>
       <td><p>A logical variable, indicating whether or not to use the
-Squarem #algorithm for acceleration of the EM algorithm. Default is TRUE.</p></td>
+Squarem algorithm for acceleration of the EM algorithm. Default is TRUE.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A \(D_s\) x \(D_r\) compositional coefficient matrix, where \(D_s\) and \(D_r\)  are the dimensions of the compositional predictor and outcome, respectively</p>
+    <p>A \(D_s\) x \(D_r\) compositional coefficient matrix, where
+\(D_s\) and \(D_r\)  are the dimensions of the compositional predictor
+and outcome, respectively</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p><a href='https://arxiv.org/abs/2004.07881'>https://arxiv.org/abs/2004.07881</a></p>
@@ -177,8 +184,12 @@ Squarem #algorithm for acceleration of the EM algorithm. Default is TRUE.</p></t
 <span class='no'>image_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>image</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"G"</span>, <span class='st'>"L"</span>, <span class='st'>"M"</span>)])
 <span class='no'>microscopic</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>WhiteCells</span>, <span class='no'>Experiment</span> <span class='kw'>==</span> <span class='st'>"MicroscopicInspection"</span>)
 <span class='no'>microscopic_mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>microscopic</span>[,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"G"</span>, <span class='st'>"L"</span>, <span class='st'>"M"</span>)])
-<span class='no'>x</span>  <span class='kw'>&lt;-</span> <span class='no'>image_mat</span>  / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>image_mat</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>microscopic_mat</span> / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>microscopic_mat</span>)</div></pre>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='no'>image_mat</span>  / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>image_mat</span>)
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>microscopic_mat</span> / <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span>(<span class='no'>microscopic_mat</span>)
+<span class='fu'>codalm</span>(<span class='no'>y</span>, <span class='no'>x</span>)</div><div class='output co'>#&gt;              [,1]       [,2]         [,3]
+#&gt; [1,] 9.742582e-01 0.02292755 2.814241e-03
+#&gt; [2,] 3.267605e-09 1.00000000 3.620972e-10
+#&gt; [3,] 9.484137e-18 0.04198815 9.580118e-01</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
