@@ -48,11 +48,13 @@ in Fiksel et al. (2020) for a test of linear independence between compositional
 outcomes and predictors.
 }
 \examples{
+\dontrun{
 require(gtools)
 x <- rdirichlet(100, c(1, 1, 1))
 y <- rdirichlet(100, c(1, 1, 1))
 codalm_indep_test(y, x)
-
+}
+\dontrun{
 require(ggtern)
 data("WhiteCells", package = 'ggtern')
 image <- subset(WhiteCells, Experiment == "ImageAnalysis")
@@ -62,4 +64,5 @@ microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
 x  <- image_mat  / rowSums(image_mat)
 y <- microscopic_mat / rowSums(microscopic_mat)
 codalm_indep_test(y, x)
+}
 }

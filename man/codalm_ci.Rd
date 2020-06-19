@@ -53,6 +53,7 @@ for the regression coefficients when doing linear regression for compositional o
 and predictors
 }
 \examples{
+\dontrun{
 require(ggtern)
 data("WhiteCells", package = 'ggtern')
 image <- subset(WhiteCells, Experiment == "ImageAnalysis")
@@ -62,4 +63,5 @@ microscopic_mat <- as.matrix(microscopic[,c("G", "L", "M")])
 x <- image_mat  / rowSums(image_mat)
 y <- microscopic_mat / rowSums(microscopic_mat)
 codalm_ci(y, x, nboot = 50, conf = .95)
+}
 }

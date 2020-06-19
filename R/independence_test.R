@@ -32,11 +32,13 @@ logLikComp <- function(y, x, M) {
 #' @import future
 #' @import future.apply
 #' @examples
+#' \dontrun{
 #' require(gtools)
 #' x <- rdirichlet(100, c(1, 1, 1))
 #' y <- rdirichlet(100, c(1, 1, 1))
 #' codalm_indep_test(y, x)
-#'
+#' }
+#'\dontrun{
 #' require(ggtern)
 #' data("WhiteCells", package = 'ggtern')
 #' image <- subset(WhiteCells, Experiment == "ImageAnalysis")
@@ -46,6 +48,7 @@ logLikComp <- function(y, x, M) {
 #' x  <- image_mat  / rowSums(image_mat)
 #' y <- microscopic_mat / rowSums(microscopic_mat)
 #' codalm_indep_test(y, x)
+#' }
 codalm_indep_test <- function(y, x, nperms = 500, accelerate = TRUE,
                               parallel = FALSE, ncpus = NULL,
                               strategy = NULL, init.seed = 123) {

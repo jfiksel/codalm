@@ -138,6 +138,7 @@ codalm_boot_fn <- function(y, x, indices, accelerate) {
 #' @import future.apply
 #' @importFrom stats quantile
 #' @examples
+#' \dontrun{
 #' require(ggtern)
 #' data("WhiteCells", package = 'ggtern')
 #' image <- subset(WhiteCells, Experiment == "ImageAnalysis")
@@ -147,6 +148,7 @@ codalm_boot_fn <- function(y, x, indices, accelerate) {
 #' x <- image_mat  / rowSums(image_mat)
 #' y <- microscopic_mat / rowSums(microscopic_mat)
 #' codalm_ci(y, x, nboot = 50, conf = .95)
+#' }
 codalm_ci <- function(y, x, accelerate = TRUE, nboot = 500, conf = .95,
                       parallel = FALSE, ncpus = NULL,
                       strategy = NULL, init.seed = 123) {
