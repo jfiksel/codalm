@@ -32,13 +32,13 @@ logLikComp <- function(y, x, M) {
 #' @import future
 #' @import future.apply
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' require(gtools)
 #' x <- rdirichlet(100, c(1, 1, 1))
 #' y <- rdirichlet(100, c(1, 1, 1))
 #' codalm_indep_test(y, x)
 #' }
-#'\dontrun{
+#'\donttest{
 #' require(ggtern)
 #' data("WhiteCells", package = 'ggtern')
 #' image <- subset(WhiteCells, Experiment == "ImageAnalysis")

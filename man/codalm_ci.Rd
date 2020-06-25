@@ -53,7 +53,7 @@ for the regression coefficients when doing linear regression for compositional o
 and predictors
 }
 \examples{
-\dontrun{
+\donttest{
 require(ggtern)
 data("WhiteCells", package = 'ggtern')
 image <- subset(WhiteCells, Experiment == "ImageAnalysis")

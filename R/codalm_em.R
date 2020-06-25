@@ -138,7 +138,7 @@ codalm_boot_fn <- function(y, x, indices, accelerate) {
 #' @import future.apply
 #' @importFrom stats quantile
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' require(ggtern)
 #' data("WhiteCells", package = 'ggtern')
 #' image <- subset(WhiteCells, Experiment == "ImageAnalysis")
