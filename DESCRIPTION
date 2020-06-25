@@ -30,5 +30,6 @@ Suggests:
     ggtern,
     gtools,
     remotes,
-    testthat
+    testthat,
+    markdown
 VignetteBuilder: knitr
