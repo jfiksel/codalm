@@ -8,7 +8,13 @@ The codalm R package implements the methods as described in [A Transformation-fr
 
 ## Installation
 
-You can install the current version of codalm for github using the `remotes` package.
+`codalm` is now available on CRAN and can be installed using
+
+```r
+install.packages('codalm')
+```
+
+You can also install the development version of codalm for github using the `remotes` package.
 
 ``` r
 remotes::install_github("jfiksel/codalm")
