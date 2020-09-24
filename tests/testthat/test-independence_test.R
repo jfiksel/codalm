@@ -6,8 +6,8 @@ test_that("independence test works with sequential evaluation", {
     y <- rdirichlet(100, rep(1,3))
     p <- codalm_indep_test(y, x)
     expect_true(p > .05)
-    oplan <- plan()
-    expect_true(identical(plan(), oplan))
+    oplan <- plan("list")
+    expect_true(identical(plan("list"), oplan))
 })
 test_that("independence test works with multisession evaluation", {
     require(gtools)
@@ -16,7 +16,7 @@ test_that("independence test works with multisession evaluation", {
     x <- rdirichlet(100, rep(1, 3))
     y <- rdirichlet(100, rep(1,3))
     p <- codalm_indep_test(y, x, parallel = TRUE, strategy = 'multisession', ncpus = 2)
-    oplan <- plan()
-    expect_true(identical(plan(), oplan))
+    oplan <- plan("list")
+    expect_true(identical(plan("list"), oplan))
 })
 
