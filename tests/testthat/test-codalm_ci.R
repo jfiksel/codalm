@@ -18,7 +18,7 @@ test_that("bootstrap CI works with sequential evaluation", {
     expect_true(mean(B_ci_U >= 0) == 1)
     expect_true(all.equal(dim(B_ci_U), c(2,3)))
     expect_true(mean(B_ci_U >= B_est) == 1)
-    expect_true(identical(plan("list"), oplan))
+    expect_true(all.equal(plan("list"), oplan))
 })
 test_that("bootstrap CI works with multisession evaluation", {
     require(gtools)
@@ -41,5 +41,5 @@ test_that("bootstrap CI works with multisession evaluation", {
     expect_true(mean(B_ci_U >= 0) == 1)
     expect_true(all.equal(dim(B_ci_U), c(2,3)))
     expect_true(mean(B_ci_U >= B_est) == 1)
-    expect_true(identical(plan("list"), oplan))
+    expect_true(all.equal(plan("list"), oplan))
 })
